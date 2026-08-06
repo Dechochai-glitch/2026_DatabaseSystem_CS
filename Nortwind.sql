@@ -48,3 +48,57 @@ SELECT *
 FROM Customers
 WHERE ContactTitle LIKE '%Manager%';
 
+
+--Aggregate function
+Select 
+	count(*) as ProductCount,
+	MIN(UnitPrice) as MinimumPrice,	MAX(UnitPrice) as MaximumPrice,	AVG(UnitPrice) as AveragePrice
+	From dbo.Products
+
+Select 
+	count(*) as จำนวนชนิด,
+	MIN(UnitPrice) as ราคาต่ำสุด,	MAX(UnitPrice) as ราคาสูงสุด,	AVG(UnitPrice) as ราคาเฉลี่ย, Sum(UnitPrice) as ราคารวมทั้งหมด
+From dbo.Products
+
+--ต้องการทราบว่าสินค้าเเต่ล่ะหมวดหมู่(CategoryID) มีสินค่ากี่ชนิด เเต่ล่ะชนิดมีราคาเฉลี่ย มีราคาสุงสุด เเละต่ำสุด
+Select CategoryID, count(*) จำนวนชนิด, Avg(UnitPrice) ราคาเฉลี่ย, Max(UnitPrice) ราคราสูงสุด, Min(UnitPrice) ราคาต่ำสุด
+from Products
+Group by CategoryID
+
+--ต้องการทราบข้อมูลว่าในเเต่ล่ะประเทศ (Country) มีลูกค้ากี่ราย (ถ้าทำได้เเล้วเพิ่ม city )
+Select Country,city ,Count(*) จำนวนลูกค้า
+from Customers
+group by Country ,City
+order by Count(*) DESC
+
+--ต้องการทราบข้อมูลว่าในเเต่ล่ะประเทศ (Country) เเสดงเฉพาะที่มีจำนวนลูกค้า 10 รายขึ้นไป
+Select Country, Count(*) จำนวนลูกค้า
+from Customers
+group by Country
+having count(*) >=10
+
+--ต้องการทราบว่าสินค้าที่มีมูลค่าสูง (ราคาตั้งเเต่ 75 ขึ้นไป) เเต่ล่ะหมวดหมู่มีจำนวนกี่ชนิด มีราคาเฉลี่ยเท่าใด
+--ให้เเสดงเฉพาะสินค้ามี่มีราคาเฉลี่ย มากกว่า 200
+Select categoryID, count(*) จำนวนชนิด, Avg(Unitprice) ราตาเฉลี่ย
+from products
+where UnitPrice >=75
+group by CategoryID
+having avg(unitprice) >200
+
+--จากตาราง [Order Details] ให้รวบรวมว่าในเเต่ล่ะการสั่งซื้อ มียอดเงินรวมเท่าใด
+Select orderID, UnitPrice, Quantity, Discount,
+	UnitPrice * Quantity as ราคาเต็ม,
+	UnitPrice * Quantity * Discount as ส่วนลด,
+	(UnitPrice * Quantity) - (UnitPrice * Quantity * Discount) as ราคาหักส่วนลดเเล้ว,
+	(UnitPrice * Quantity * (1- Discount)) as หักส่วนลดสูตรย่อ
+from [Order Details]
+
+--ต้องการเฉพาะใบสั่งซื้อที่มียอดกว่า 1000
+Select orderID, count(*) จำนวนรายการ ,
+	sum(UnitPrice * Quantity * (1- Discount)) as  ยอดเงินรวม
+from [Order Details]
+group by orderID
+having sum(UnitPrice * Quantity * (1- Discount)) > 2000
+order by 3 desc
+
+
